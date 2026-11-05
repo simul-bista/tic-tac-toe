@@ -121,6 +121,7 @@ def test_detects_each_winning_line_for_both_players(
     assert game.winner is winner
     assert game.current_player is winner
     assert game.status is GameStatus.WON
+    assert game.winning_lines == (winning_line,)
 
 
 def test_move_completing_winning_line_as_final_empty_cell_wins() -> None:
@@ -217,6 +218,30 @@ def test_full_board_without_winner_is_draw() -> None:
     assert game.winner is None
     assert game.status is GameStatus.DRAW
     assert game.current_player is Player.X
+    assert game.winning_lines == ()
+
+
+def test_final_move_can_complete_multiple_winning_lines() -> None:
+    game = Game()
+    moves = (
+        (1, 0),  # X
+        (0, 1),  # O
+        (1, 2),  # X
+        (2, 1),  # O
+        (0, 0),  # X
+        (2, 0),  # O
+        (2, 2),  # X
+        (0, 2),  # O
+        (1, 1),  # X completes row and diagonal
+    )
+    for move in moves:
+        game.make_move(*move)
+
+    assert game.winner is Player.X
+    assert game.winning_lines == (
+        ((1, 0), (1, 1), (1, 2)),
+        ((0, 0), (1, 1), (2, 2)),
+    )
 
 
 @pytest.mark.parametrize(

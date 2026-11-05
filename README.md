@@ -32,18 +32,28 @@ Build a clean and well-tested implementation of Tic-Tac-Toe while learning GitHu
 
 ## Implementation Coverage
 
-| Requirement | Core game model | Command-line game |
-| --- | --- | --- |
-| Two players (X and O) | Implemented | Implemented |
-| 3x3 board | Implemented | Implemented |
-| Alternate turns | Implemented | Implemented |
-| Detect winner | Implemented | Implemented |
-| Detect draw | Implemented | Implemented |
-| Prevent invalid moves | Implemented | Implemented |
+| Requirement | Core game model | Command-line game | Local web game |
+| --- | --- | --- | --- |
+| Two players (X and O) | Implemented | Implemented | Implemented |
+| 3x3 board | Implemented | Implemented | Implemented |
+| Alternate turns | Implemented | Implemented | Implemented |
+| Detect winner | Implemented | Implemented | Implemented |
+| Detect draw | Implemented | Implemented | Implemented |
+| Prevent invalid moves | Implemented | Implemented | Implemented |
 
-The game model and human-versus-human command-line game cover all listed gameplay requirements. Computer opponent, difficulty levels, score tracking, and save/load remain future features.
+The game model and human-versus-human command-line and local web interfaces cover all listed gameplay requirements. Computer opponent, difficulty levels, score tracking, and save/load remain future features.
 
 The current 1.0 candidate scope and status are documented in [RELEASE_NOTES.md](RELEASE_NOTES.md).
+
+## Playing in a Browser
+
+The local web interface lets two players use the same game rules as the command-line game. Start the server from the repository root:
+
+```shell
+python web_app.py
+```
+
+Open the loopback URL printed by the server in a browser on the same machine. The server asks the operating system for an available port and binds only to `127.0.0.1`. Select an empty square; the board and active-player status update after each move. Winning symbols are crossed by a line, and simultaneous winning lines are all shown. Choose **New game** to reset the board.
 
 ## Running the Game
 

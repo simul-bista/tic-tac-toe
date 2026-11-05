@@ -46,14 +46,24 @@ class Game:
 
     @property
     def winner(self) -> Player | None:
-        for combination in self._WINNING_COMBINATIONS:
-            row, column = combination[0]
-            player = self._board[row][column]
-            if player is not None and all(
-                self._board[r][c] is player for r, c in combination[1:]
-            ):
-                return player
-        return None
+        lines = self.winning_lines
+        if not lines:
+            return None
+        row, column = lines[0][0]
+        return self._board[row][column]
+
+    @property
+    def winning_lines(self) -> tuple[tuple[tuple[int, int], ...], ...]:
+        return tuple(
+            combination
+            for combination in self._WINNING_COMBINATIONS
+            if (player := self._board[combination[0][0]][combination[0][1]])
+            is not None
+            and all(
+                self._board[row][column] is player
+                for row, column in combination[1:]
+            )
+        )
 
     @property
     def status(self) -> GameStatus:
