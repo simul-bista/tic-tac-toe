@@ -6,11 +6,28 @@ class Player(Enum):
     O = "O"
 
 
+class GameStatus(Enum):
+    IN_PROGRESS = "in_progress"
+    WON = "won"
+    DRAW = "draw"
+
+
 class InvalidMoveError(ValueError):
     pass
 
 
 class Game:
+    _WINNING_COMBINATIONS = (
+        ((0, 0), (0, 1), (0, 2)),
+        ((1, 0), (1, 1), (1, 2)),
+        ((2, 0), (2, 1), (2, 2)),
+        ((0, 0), (1, 0), (2, 0)),
+        ((0, 1), (1, 1), (2, 1)),
+        ((0, 2), (1, 2), (2, 2)),
+        ((0, 0), (1, 1), (2, 2)),
+        ((0, 2), (1, 1), (2, 0)),
+    )
+
     def __init__(self) -> None:
         self._board: list[list[Player | None]] = [
             [None, None, None],
@@ -27,7 +44,28 @@ class Game:
     def current_player(self) -> Player:
         return self._current_player
 
+    @property
+    def winner(self) -> Player | None:
+        for combination in self._WINNING_COMBINATIONS:
+            row, column = combination[0]
+            player = self._board[row][column]
+            if player is not None and all(
+                self._board[r][c] is player for r, c in combination[1:]
+            ):
+                return player
+        return None
+
+    @property
+    def status(self) -> GameStatus:
+        if self.winner is not None:
+            return GameStatus.WON
+        if all(cell is not None for row in self._board for cell in row):
+            return GameStatus.DRAW
+        return GameStatus.IN_PROGRESS
+
     def make_move(self, row: int, column: int) -> None:
+        if self.status is not GameStatus.IN_PROGRESS:
+            raise InvalidMoveError("game is already over")
         if type(row) is not int or type(column) is not int:
             raise TypeError("row and column must be integers")
         if not (0 <= row < 3 and 0 <= column < 3):
@@ -36,6 +74,7 @@ class Game:
             raise InvalidMoveError("cell is already occupied")
 
         self._board[row][column] = self._current_player
-        self._current_player = (
-            Player.O if self._current_player is Player.X else Player.X
-        )
+        if self.status is GameStatus.IN_PROGRESS:
+            self._current_player = (
+                Player.O if self._current_player is Player.X else Player.X
+            )
